@@ -1,52 +1,34 @@
 import numpy as np
+import cv2 as cv 
 import networkx as nx
-import matplotlib.pyplot as plt
-import cv2 as cv
+from affinity import affinity
 
-def image_to_graph(image, k=1):
-    """Convert image to graph
-    Args:
-        image: ndarray image to convert 
-        k: neighborhood around each pixel
-    Returns:
-        vertices: vertices of graph
-        edge_list: edge list of graph
-    """
-    # get the width and height of image
-    width, height, c = image.shape
-    # Create the graph
+def image_to_graph(image, k=1, sigma=1.):
+    
+    # Define the Image Graph to return 
     G = nx.Graph()
-    # Add nodes to the graph
-    for i in range(width):
-        for j in range(height):
-            # Add node with feature vector
-            G.add_node((i, j), feature=image[i, j])
-    # Add edges to the graph
-    # Iterate over all nodes
-    for u in G.nodes():
-        # get the neighbors of node u
-        neighbors = []
-        for i in range(-k, k+1):
-            for j in range(-k, k+1):
-                if i == 0 and j == 0:
-                    continue
-                x = u[0] + i
-                y = u[1] + j
-                if x >= 0 and x < width and y >= 0 and y < height:
-                    neighbors.append((x, y))
-        # Add edges between u and its neighbors
-        for v in neighbors:
-            G.add_edge(u, v)
-    # return graph
-    return G     
 
+    # Add pixels/nodes to the graph
+    cluser_idx = 0
+    for i in range(image.shape[0]):
+        for j in range(image.shape[1]):
+            # Define pixel index
+            pixel_idx = (i, j)
+            # Add node to graph
+            G.add_node((i,j), rgb=image[i, j], cluster=cluser_idx)
+            cluser_idx += 1 
 
-if __name__ == '__main__':
-    # load image with cv 
-    image = cv.imread('./lena.png')
-    # resize image
-    image = cv.resize(image, (128, 128))
-    # convert image to graph
-    G = image_to_graph(image) 
-    print('Number of nodes: ', G.number_of_nodes())
-    print('Number of edges: ', G.number_of_edges())
+    # Add edges between pixels that are within a k-hop neighborhood
+    edges = set()
+    for i in range(image.shape[0]):
+        for j in range(image.shape[1]):
+            # Add all pixels within a k x k window to the set of edges
+            for r in range(max(0, i-k), min(image.shape[0], i+k+1)):
+                for c in range(max(0, j-k), min(image.shape[1], j+k+1)):
+                    # Prevent adding the same pixel as an edge
+                    if r == i and c == j: continue
+                    # Compute affinity between 2 pixels
+                    affinity_value = affinity(image[i, j], image[r, c], sigma=sigma)
+                    G.add_edge((i,j), (r,c), weight=affinity_value)
+
+    return image, G

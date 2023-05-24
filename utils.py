@@ -49,4 +49,5 @@ def viz_segmentation(image, G, gray=False, display=False):
         fix, axes = plt.subplots(1, 2, figsize=(10, 3))
         axes[0].imshow(image)
         axes[1].imshow(segmented_image)
+        
     return segmented_image

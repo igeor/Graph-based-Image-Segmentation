@@ -12,11 +12,11 @@ Below is an example that demonstrates the original image and its corresponding s
 
 ### Original Image
 
-![Original Image](./images/lena.png)
+![Original Image](images/lena.png)
 
 ### Segmented Image
 
-![Segmented Image](./results/land_segmented_256_n1_sigma5.png)
+![Segmented Image](results/land_segmented_256_n1_sigma5.png)
 
 In the example above, the algorithm successfully separates the objects in the image into distinct regions, enabling further analysis and processing.
 

@@ -20,16 +20,18 @@ To use this implementation, follow these steps:
 
 1. Clone the repository:
 
-```bash
+```shell
 git clone https://github.com/igeor/Graph-based-Image-Segmentation.git
+```
 
 2. Navigate to the repository:
 
-```bash 
+```shell 
 cd Graph-based-Image-Segmentation
-
+```
 
 3. Run the segmentation algorithm on your desired image:
 
-```bash
+```shell
 python run.py --image_path images/your_image.jpg --image_size 128 --sigma 4. --neigh 3 --K 120
+```
